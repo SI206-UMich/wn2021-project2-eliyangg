@@ -14,16 +14,31 @@ def get_titles_from_search_results(filename):
 
     [('Book title 1', 'Author 1'), ('Book title 2', 'Author 2')...]
     """
+    source_dir = os.path.dirname(__file__) #<-- directory name
+    full_path = os.path.join(source_dir, filename)
+    li = []
+    with open(full_path,'r', encoding='utf-8') as f:
+        contents = f.read()
+        soup = BeautifulSoup(contents, 'html.parser')
+        anchor1 = soup.find_all('tr')
+        print(anchor1)
+        for x in anchor1:
+            anchor2 = x.find('a', class_ = 'bookTitle')
+            anchor3 = x.find('a', class_ = 'authorName')
+            title = anchor2.text
+            title = title.strip()
+            author = anchor3.text
+            author = author.strip()
+            x = (title, author)
+            li.append(x)
+        print(li)
 
-    pass
-
-
-def get_search_links():
+def get_search_links(soup):
     """
     Write a function that creates a BeautifulSoup object after retrieving content from
     "https://www.goodreads.com/search?q=fantasy&qid=NwUsLiA2Nc". Parse through the object and return a list of
     URLs for each of the first ten books in the search using the following format:
-
+    
     ['https://www.goodreads.com/book/show/84136.Fantasy_Lover?from_search=true&from_srp=true&qid=NwUsLiA2Nc&rank=1', ...]
 
     Notice that you should ONLY add URLs that start with "https://www.goodreads.com/book/show/" to 
@@ -31,8 +46,11 @@ def get_search_links():
     “https://www.goodreads.com/book/show/kdkd".
 
     """
-
-    pass
+    url = "https://www.goodreads.com/search?q=fantasy&qid=NwUsLiA2Nc"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    anchor1 = soup.find_all('a', class_ = 'bookTitle')
+    print(anchor1)
 
 
 def get_book_summary(book_url):
@@ -98,6 +116,9 @@ def extra_credit(filepath):
     """
     pass
 
+def main():
+    get_titles_from_search_results("search_results.htm")
+
 class TestCases(unittest.TestCase):
 
     # call get_search_links() and save it to a static variable: search_urls
@@ -115,17 +136,17 @@ class TestCases(unittest.TestCase):
         # check that the first book and author tuple is correct (open search_results.htm and find it)
 
         # check that the last title is correct (open search_results.htm and find it)
+        pass
 
     def test_get_search_links(self):
         # check that TestCases.search_urls is a list
 
         # check that the length of TestCases.search_urls is correct (10 URLs)
-
+        
 
         # check that each URL in the TestCases.search_urls is a string
         # check that each URL contains the correct url for Goodreads.com followed by /book/show/
-
-
+        pass 
     def test_get_book_summary(self):
         # create a local variable – summaries – a list containing the results from get_book_summary()
         # for each URL in TestCases.search_urls (should be a list of tuples)
@@ -141,6 +162,7 @@ class TestCases(unittest.TestCase):
             # check that the third element in the tuple, i.e. pages is an int
 
             # check that the first book in the search has 337 pages
+        pass
 
 
     def test_summarize_best_books(self):
@@ -155,7 +177,7 @@ class TestCases(unittest.TestCase):
         # check that the first tuple is made up of the following 3 strings:'Fiction', "The Midnight Library", 'https://www.goodreads.com/choiceawards/best-fiction-books-2020'
 
         # check that the last tuple is made up of the following 3 strings: 'Picture Books', 'Antiracist Baby', 'https://www.goodreads.com/choiceawards/best-picture-books-2020'
-
+        pass
 
     def test_write_csv(self):
         # call get_titles_from_search_results on search_results.htm and save the result to a variable
@@ -172,10 +194,11 @@ class TestCases(unittest.TestCase):
         # check that the next row is 'Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling'
 
         # check that the last row is 'Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling'
-
+        pass
 
 
 if __name__ == '__main__':
+    main()
     print(extra_credit("extra_credit.htm"))
     unittest.main(verbosity=2)
 
