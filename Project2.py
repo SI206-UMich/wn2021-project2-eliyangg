@@ -266,12 +266,16 @@ class TestCases(unittest.TestCase):
         write_csv(x, 'test.csv')        
 
         # read in the csv that you wrote (create a variable csv_lines - a list containing all the lines in the csv you just wrote to above)
-        counter = 0
         with open('test.csv', 'r') as f:
             csvFile = csv.reader(f)
-            for x in csvFile:
-                counter = counter + 1
-            self.assertEqual(counter, 21)
+            data_list = list(csvFile)
+            
+            
+            self.assertEqual(len(data_list), 21)
+            self.assertEqual(data_list[0], ['Book Title', 'Author Name'])
+            self.assertEqual(data_list[1], ['Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling'])
+            self.assertEqual(data_list[-1], ['Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling'])
+            
         
         # check that there are 21 lines in the csv
 
@@ -280,7 +284,7 @@ class TestCases(unittest.TestCase):
         # check that the next row is 'Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling'
 
         # check that the last row is 'Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling'
-        pass
+        
 
 
 if __name__ == '__main__':
