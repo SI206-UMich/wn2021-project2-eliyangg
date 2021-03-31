@@ -86,8 +86,8 @@ def get_book_summary(book_url):
     pages = pages.strip()
 
     tup = (title, author, pages)
-    print(tup)
-    return (title, author, pages)
+    
+    return tup
 
 def summarize_best_books(filepath):
     """
@@ -100,7 +100,30 @@ def summarize_best_books(filepath):
     ("Fiction", "The Testaments (The Handmaid's Tale, #2)", "https://www.goodreads.com/choiceawards/best-fiction-books-2020") 
     to your list of tuples.
     """
-    pass
+    
+    source_dir = os.path.dirname(__file__) #<-- directory name
+    full_path = os.path.join(source_dir, filepath)
+    l1 = []
+    with open(full_path,'r', encoding='utf-8') as f:
+        contents = f.read()
+        soup = BeautifulSoup(contents, 'html.parser')
+        a1 = soup.find_all('div', class_ = "clearFix")
+        for x in a1:
+            a2 = x.find('a')
+            link = x.find('a')['href']
+            link = link.strip()
+
+            a3 = a2.find('h4')
+            category = a3.text
+            category = category.strip()
+
+            title = a2.find('img')['alt']
+            title = title.strip()
+
+            tup = (category, title, link)
+            l1.append(tup)
+        print(l1[1:])
+
 
 
 def write_csv(data, filename):
@@ -139,9 +162,10 @@ def main():
     url = "https://www.goodreads.com/search?q=fantasy&qid=NwUsLiA2Nc"
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    get_titles_from_search_results("search_results.htm")
-    get_search_links(soup)
-    get_book_summary("https://www.goodreads.com/book/show/84136.Fantasy_Lover?from_search=true&from_srp=true&qid=NwUsLiA2Nc&rank=1")
+    #get_titles_from_search_results("search_results.htm")
+    #get_search_links(soup)
+    #get_book_summary("https://www.goodreads.com/book/show/84136.Fantasy_Lover?from_search=true&from_srp=true&qid=NwUsLiA2Nc&rank=1")
+    summarize_best_books("best_books_2020.htm")
 
 class TestCases(unittest.TestCase):
 
