@@ -21,7 +21,6 @@ def get_titles_from_search_results(filename):
         contents = f.read()
         soup = BeautifulSoup(contents, 'html.parser')
         anchor1 = soup.find_all('tr')
-        print(anchor1)
         for x in anchor1:
             anchor2 = x.find('a', class_ = 'bookTitle')
             anchor3 = x.find('a', class_ = 'authorName')
@@ -31,7 +30,8 @@ def get_titles_from_search_results(filename):
             author = author.strip()
             x = (title, author)
             li.append(x)
-        print(li)
+        #print(li)
+        return li
 
 def get_search_links(soup):
     """
@@ -46,12 +46,15 @@ def get_search_links(soup):
     “https://www.goodreads.com/book/show/kdkd".
 
     """
-    url = "https://www.goodreads.com/search?q=fantasy&qid=NwUsLiA2Nc"
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    anchor1 = soup.find_all('a', class_ = 'bookTitle')
-    print(anchor1)
-
+    l2 = []
+    anchor1 = soup.find_all('tr')
+    for x in anchor1:
+        anchor2 = x.find('a', class_ = 'bookTitle')
+        anchor3 = anchor2['href']
+        url = "https://www.goodreads.com" + anchor3
+        if len(l2) < 10:
+            l2.append(url)
+    return l2
 
 def get_book_summary(book_url):
     """
@@ -66,9 +69,25 @@ def get_book_summary(book_url):
     You can easily capture CSS selectors with your browser's inspector window.
     Make sure to strip() any newlines from the book title and number of pages.
     """
+    r = requests.get(book_url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    a1 = soup.find('div', id = 'metacol', class_ = 'last col')
+    a2 = a1.find('h1', id = "bookTitle")
+    a3 = a1.find('span', itemprop = "name")
+    a4 = a1.find('span', itemprop = "numberOfPages")
 
-    pass
+    title = a2.text
+    title = title.strip()
 
+    author = a3.text
+    author = author.strip()
+
+    pages = a4.text
+    pages = pages.strip()
+
+    tup = (title, author, pages)
+    print(tup)
+    return (title, author, pages)
 
 def summarize_best_books(filepath):
     """
@@ -117,7 +136,12 @@ def extra_credit(filepath):
     pass
 
 def main():
+    url = "https://www.goodreads.com/search?q=fantasy&qid=NwUsLiA2Nc"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
     get_titles_from_search_results("search_results.htm")
+    get_search_links(soup)
+    get_book_summary("https://www.goodreads.com/book/show/84136.Fantasy_Lover?from_search=true&from_srp=true&qid=NwUsLiA2Nc&rank=1")
 
 class TestCases(unittest.TestCase):
 
